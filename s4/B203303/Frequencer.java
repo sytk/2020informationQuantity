@@ -80,14 +80,43 @@ public class Frequencer implements FrequencerInterface {
       suffixArray[i]  = i;      //	Please	note	that	each	suffix	is	expressed	by	one integer.
     }
 
-    for(int i = 0; i < space.length - 1; i++) {
-      for(int j = i + 1; j < space.length; j++) {
-        if(suffixCompare(suffixArray[i], suffixArray[j]) == 1) {
-          int temp = suffixArray[i];
-          suffixArray[i] = suffixArray[j];
-          suffixArray[j] = temp;
-        }
+    // for(int i = 0; i < space.length - 1; i++) {
+    //   for(int j = i + 1; j < space.length; j++) {
+    //     if(suffixCompare(suffixArray[i], suffixArray[j]) == 1) {
+    //       int temp = suffixArray[i];
+    //       suffixArray[i] = suffixArray[j];
+    //       suffixArray[j] = temp;
+    //     }
+    //   }
+    // }
+    mergeSort(suffixArray);
+  }
+
+  private void merge(int[] a1,int[] a2,int[] a){
+    int i = 0,j = 0;
+    while(i < a1.length || j < a2.length){
+      if(j >= a2.length || (i < a1.length && suffixCompare(a1[i], a2[j]) == -1) ) {
+    	   a[i+j]=a1[i];
+    	   i++;
       }
+      else{
+    	   a[i+j]=a2[j];
+    	   j++;
+      }
+    }
+  }
+
+  private void mergeSort(int[] a){
+    if(a.length > 1){
+      int m = a.length / 2;
+      int n = a.length - m;
+      int[] a1 = new int[m];
+      int[] a2 = new int[n];
+      for(int i = 0; i < m; i++) a1[i] = a[i];
+      for(int i = 0; i < n; i++) a2[i] = a[m + i];
+      mergeSort(a1);
+      mergeSort(a2);
+      merge(a1,a2,a);
     }
   }
 
@@ -146,7 +175,7 @@ private int targetCompare(int i,  int j,  int k)  {
   int start_j = j;
   for(int idx = 0; idx < k - start_j; idx++, j++){
     if(suffixArray[i] + idx >= mySpace.length)
-      return 1;
+      return -1;
   	if(mySpace[suffixArray[i] + idx] >  myTarget[j])
 		  return 1;
     else if(mySpace[suffixArray[i]  + idx] <  myTarget[j])
@@ -154,6 +183,7 @@ private int targetCompare(int i,  int j,  int k)  {
   }
   return 0;
 }
+
 private int subByteStartIndex(int start,  int end)  {
   //suffix	array のなかで、目的の文字列の出現が始まる位置を求めるメソッド
   //	以下のように定義せよ。
@@ -179,12 +209,36 @@ private int subByteStartIndex(int start,  int end)  {
   //
   //	ここにコードを記述せよ。
   //
-  for(int i = 0; i < mySpace.length; i++){
-    if(targetCompare(i, start, end) == 0)
-      return i;
+
+  // for(int i = 0; i < mySpace.length; i++){
+  // if(targetCompare(i, start, end) == 0)
+  // return i;
+  // }
+  //   return -1;
+
+  int idx = binarySearch(0, mySpace.length, start, end);
+  if(idx == -1)
+    return -1;
+
+  while(--idx >= 0){
+    if(targetCompare(idx, start, end) != 0)
+      return ++idx;
   }
-  return -1;
+  return 0;
 }
+
+private int binarySearch(int start_idx, int end_idx, int target_start, int target_end){
+  int middle_idx = (end_idx - start_idx) / 2 + start_idx;
+  int result  = targetCompare(middle_idx, target_start, target_end);
+  if(result == 0)
+    return middle_idx;
+  else if(end_idx - start_idx <= 1)
+    return -1;
+  else if(result == 1)
+  return binarySearch(start_idx, middle_idx, target_start, target_end);
+    return binarySearch(middle_idx, end_idx, target_start, target_end);
+}
+
 private int subByteEndIndex(int start,  int end)  {
   //suffix	array のなかで、目的の文字列の出現しなくなる場所を求めるメソッド
   //	以下のように定義せよ。
@@ -206,18 +260,19 @@ private int subByteEndIndex(int start,  int end)  {
   //	Assuming	the	suffix	array	is	created	from	"Hi	Ho	Hi	Ho",
   //	if	target_start_end	is	"Ho",	it	will	return	7	for	"Hi	Ho	Hi	Ho".
   //	 Assuming	 the	 suffix	 array	 is	 created	 from	 "Hi	 Ho	 Hi	 Ho",
-
-
   //	if	target_start_end	is"i",	it	will	return	9	for	"Hi	Ho	Hi	Ho".
-  //
-  // ここにコードを記述せよ
-  //
-  for(int j = mySpace.length - 1; j >= 0; j--){
-  	if(targetCompare(j, start, end) == 0)
-    	return j + 1;
+
+  int idx = binarySearch(0, mySpace.length, start, end);
+  if(idx == -1)
+    return -1;
+
+  while(++idx < mySpace.length){
+    if(targetCompare(idx, start, end) != 0)
+      return --idx + 1;
   }
-  return -1;
+  return mySpace.length;
 }
+
 //	Suffix	Array を使ったプログラムのホワイトテストは、
 //	private なメソッドとフィールドをアクセスすることが必要なので、
 //	クラスに属する static	main に書く方法もある。
@@ -249,7 +304,8 @@ public static void  main(String[] args) {
     9:o
     A:o	Hi	Ho
     */
-    frequencerObject.setTarget("H".getBytes());
+    // frequencerObject.setTarget("AA".getBytes());
+    frequencerObject.setTarget(" H".getBytes());
     //
     //	****		Please	write	code	to	check	subByteStartIndex,	and	subByteEndIndex
     //
@@ -262,7 +318,8 @@ public static void  main(String[] args) {
     else {System.out.println("WRONG"); }
   }
   catch(Exception e)  {
-    System.out.println("STOP");
+    // System.out.println("STOP");
+    System.out.println(e);
   }
 }
 }
