@@ -51,11 +51,9 @@ public class Frequencer implements FrequencerInterface {
     //	"Ho"					<		"Ho	"						;	if	the	prefix	is	identical,	longer	string	is	big
     //
     //The	 return	 value	 of	 "int	 suffixCompare"	 is	 as	 follows.
-
     //	if	suffix_i	>	suffix_j,	it	returns	1
     //	if	suffix_i	<	suffix_j,	it	returns	-1
     //	if	suffix_i	=	suffix_j,	it	returns	0;
-
 
     if(mySpace[i] > mySpace[j])
       return 1;
@@ -115,12 +113,12 @@ public class Frequencer implements FrequencerInterface {
     if(myTarget[start+i]	!=	mySpace[offset+i])	{	abort	=	true;	break;	}
   }
   if(abort	==	false)	{	count++; }
-}
-*/
-int first = subByteStartIndex(start,  end);
-int last1 = subByteEndIndex(start,  end);
-return last1 - first;
-}
+  }
+  */
+    int first = subByteStartIndex(start,  end);
+    int last1 = subByteEndIndex(start,  end);
+    return last1 - first;
+  }
 //	変更してはいけないコードはここまで。
 private int targetCompare(int i,  int j,  int k)  {
   //	suffixArray を探索するときに使う比較関数。
@@ -144,10 +142,17 @@ private int targetCompare(int i,  int j,  int k)  {
   //	"Ho"						=					"Ho"
   //	"Ho"						<					"Ho	"			:	"Ho	"	is	not	in	the	head	of	suffix	"Ho"
   //	"Ho"						=					"H"					:	"H"	is	in	the	head	of	suffix	"Ho"
-  //
   //	ここに比較のコードを書け
-  //
-  return 0;           //	この行は変更しなければならない。
+  int start_j = j;
+  for(int idx = 0; idx < k - start_j; idx++, j++){    
+    if(suffixArray[i] + idx >= mySpace.length)
+      return 1;
+  	if(mySpace[suffixArray[i] + idx] >  myTarget[j])
+		  return 1;
+    else if(mySpace[suffixArray[i]  + idx] <  myTarget[j])
+      return -1;
+  }
+  return 0;
 }
 private int subByteStartIndex(int start,  int end)  {
   //suffix	array のなかで、目的の文字列の出現が始まる位置を求めるメソッド
@@ -174,7 +179,11 @@ private int subByteStartIndex(int start,  int end)  {
   //
   //	ここにコードを記述せよ。
   //
-  return suffixArray.length;          //このコードは変更しなければならない。
+  for(int i = 0; i < mySpace.length; i++){
+    if(targetCompare(i, start, end) == 0)
+      return i;
+  }
+  return -1;
 }
 private int subByteEndIndex(int start,  int end)  {
   //suffix	array のなかで、目的の文字列の出現しなくなる場所を求めるメソッド
@@ -203,7 +212,11 @@ private int subByteEndIndex(int start,  int end)  {
   //
   // ここにコードを記述せよ
   //
-  return suffixArray.length;          //	この行は変更しなければならない、
+  for(int j = mySpace.length - 1; j >= 0; j--){
+  	if(targetCompare(j, start, end) == 0)
+    	return j + 1;
+  }
+  return -1;
 }
 //	Suffix	Array を使ったプログラムのホワイトテストは、
 //	private なメソッドとフィールドをアクセスすることが必要なので、
@@ -219,7 +232,9 @@ public static void  main(String[] args) {
   Frequencer frequencerObject;
   try {
     frequencerObject  = new Frequencer();
+    // frequencerObject.setSpace("AAA".getBytes());
     frequencerObject.setSpace("Hi Ho Hi Ho".getBytes());
+
     frequencerObject.printSuffixArray();          //	you	may	use	this	line	for	DEBUG
     /*	Example	from	"Hi	Ho	Hi	Ho"
     0:	Hi	Ho
@@ -238,7 +253,6 @@ public static void  main(String[] args) {
     //
     //	****		Please	write	code	to	check	subByteStartIndex,	and	subByteEndIndex
     //
-
     int result  = frequencerObject.frequency();
     System.out.print("Freq	=	"+ result+"	" );
 
