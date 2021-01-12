@@ -62,9 +62,9 @@ public class Frequencer implements FrequencerInterface {
     else{
       if(i+1 <= mySpace.length-1 && j+1 <= mySpace.length-1)
         return suffixCompare(i+1, j+1);
-      else if(j+1 <= mySpace.length-1)
-        return -1;
-      else return 1;
+      else if(j+1 > mySpace.length-1)
+        return 1; //jが示すsufficの方が文字列が短いため，入れ替える
+      else return -1; //iが示すsufficの方が文字列が短いため，入れ替えない
     }
   }
 
@@ -210,16 +210,11 @@ private int subByteStartIndex(int start,  int end)  {
   //	ここにコードを記述せよ。
   //
 
-  // for(int i = 0; i < mySpace.length; i++){
-  // if(targetCompare(i, start, end) == 0)
-  // return i;
-  // }
-  //   return -1;
-
   int idx = binarySearch(0, mySpace.length, start, end);
   if(idx == -1)
     return -1;
 
+  //同じ文字が複数並んでいる場合に，もっとも先頭のidxを見つける
   while(--idx >= 0){
     if(targetCompare(idx, start, end) != 0)
       return ++idx;
@@ -232,11 +227,11 @@ private int binarySearch(int start_idx, int end_idx, int target_start, int targe
   int result  = targetCompare(middle_idx, target_start, target_end);
   if(result == 0)
     return middle_idx;
-  else if(end_idx - start_idx <= 1)
+  else if(end_idx - start_idx <= 1) //検索する文字列が1つしか残ってなかった
     return -1;
   else if(result == 1)
-  return binarySearch(start_idx, middle_idx, target_start, target_end);
-    return binarySearch(middle_idx, end_idx, target_start, target_end);
+    return binarySearch(start_idx, middle_idx, target_start, target_end);
+  return binarySearch(middle_idx, end_idx, target_start, target_end);
 }
 
 private int subByteEndIndex(int start,  int end)  {
@@ -266,6 +261,7 @@ private int subByteEndIndex(int start,  int end)  {
   if(idx == -1)
     return -1;
 
+  //同じ文字が複数並んでいる場合に，もっとも末尾のidxを見つける
   while(++idx < mySpace.length){
     if(targetCompare(idx, start, end) != 0)
       return --idx + 1;
@@ -287,7 +283,6 @@ public static void  main(String[] args) {
   Frequencer frequencerObject;
   try {
     frequencerObject  = new Frequencer();
-    // frequencerObject.setSpace("AAA".getBytes());
     frequencerObject.setSpace("Hi Ho Hi Ho".getBytes());
 
     frequencerObject.printSuffixArray();          //	you	may	use	this	line	for	DEBUG
