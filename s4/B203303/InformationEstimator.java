@@ -49,28 +49,25 @@ public class InformationEstimator implements InformationEstimatorInterface {
     @Override
     public double estimation(){
         double max_value = Double.MAX_VALUE;
-        if(myTarget.length == 0)
+        if(myTarget == null || myTarget.length == 0)
           return 0.0;
-        if(mySpace.length == 0)
+        if(mySpace == null || mySpace.length == 0)
           return max_value;
 
         double iq_array[] = new double[myTarget.length];
+        myFrequencer.setTarget(myTarget);
 
         for(int i = 0; i < myTarget.length; i++){
-          iq_array[i] = max_value;
-          myFrequencer.setTarget(subBytes(myTarget, 0, i+1));
-          double value = iq(myFrequencer.frequency());
-          if(iq_array[i] > value)
-            iq_array[i] = value; //f("abcd")
-
+          iq_array[i] = iq(myFrequencer.subByteFrequency(0, i+1));
           for(int j = i - 1; j >= 0; j--){
-            myFrequencer.setTarget(subBytes(myTarget, j+1, i+1));
-            value = iq_array[j] + iq(myFrequencer.frequency());
+            double value = iq_array[j] + iq(myFrequencer.subByteFrequency(j+1, i+1));
             if(iq_array[i] > value)
               iq_array[i] = value;
           }
         }
-        return iq_array[myTarget.length-1];
+        if(iq_array[myTarget.length-1] > max_value)
+          return max_value;
+        else return iq_array[myTarget.length-1];
     }
 
     public static void main(String[] args) {

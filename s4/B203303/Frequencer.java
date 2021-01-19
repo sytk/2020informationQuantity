@@ -80,15 +80,6 @@ public class Frequencer implements FrequencerInterface {
       suffixArray[i]  = i;      //	Please	note	that	each	suffix	is	expressed	by	one integer.
     }
 
-    // for(int i = 0; i < space.length - 1; i++) {
-    //   for(int j = i + 1; j < space.length; j++) {
-    //     if(suffixCompare(suffixArray[i], suffixArray[j]) == 1) {
-    //       int temp = suffixArray[i];
-    //       suffixArray[i] = suffixArray[j];
-    //       suffixArray[j] = temp;
-    //     }
-    //   }
-    // }
     mergeSort(suffixArray);
   }
 
@@ -208,7 +199,6 @@ private int subByteStartIndex(int start,  int end)  {
   //	if	target_start_end	is	"Ho	",	it	will	return	6.
   //
   //	ここにコードを記述せよ。
-  //
 
   int idx = binarySearch(0, mySpace.length, start, end);
   if(idx == -1)
@@ -231,7 +221,9 @@ private int binarySearch(int start_idx, int end_idx, int target_start, int targe
     return -1;
   else if(result == 1)
     return binarySearch(start_idx, middle_idx, target_start, target_end);
-  return binarySearch(middle_idx, end_idx, target_start, target_end);
+  else if(result == -1)
+    return binarySearch(middle_idx, end_idx, target_start, target_end);
+  return -1;
 }
 
 private int subByteEndIndex(int start,  int end)  {
