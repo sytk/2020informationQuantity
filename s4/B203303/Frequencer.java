@@ -55,17 +55,24 @@ public class Frequencer implements FrequencerInterface {
     //	if	suffix_i	<	suffix_j,	it	returns	-1
     //	if	suffix_i	=	suffix_j,	it	returns	0;
 
-    if(mySpace[i] > mySpace[j])
-      return 1;
-    else if(mySpace[i] < mySpace[j])
-      return -1;
-    else{
-      if(i+1 <= mySpace.length-1 && j+1 <= mySpace.length-1)
-        return suffixCompare(i+1, j+1);
-      else if(j+1 > mySpace.length-1)
-        return 1; //jが示すsufficの方が文字列が短いため，入れ替える
-      else return -1; //iが示すsufficの方が文字列が短いため，入れ替えない
+    while(true){
+      if(mySpace[i] > mySpace[j])
+        return 1;
+      else if(mySpace[i] < mySpace[j])
+        return -1;
+      else{
+        if(i+1 <= mySpace.length-1 && j+1 <= mySpace.length-1){
+          // return suffixCompare(i+1, j+1); //再帰しすぎでスタックが溢れた
+          i++;
+          j++;
+          continue;
+        }
+        else if(j+1 > mySpace.length-1)
+          return 1; //jが示すsufficの方が文字列が短いため，入れ替える
+        else return -1; //iが示すsufficの方が文字列が短いため，入れ替えない
+      }
     }
+
   }
 
   public void  setSpace(byte [] space)  {
